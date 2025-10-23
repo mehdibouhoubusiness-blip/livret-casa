@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>L'appartement de Casablanca — Livret d'accueil</title>
+  <meta name="description" content="Livret d'accueil numérique pour les voyageurs Airbnb à Casablanca : accès, Wi‑Fi, parking, règles, recommandations locales et contact." />
+  <meta name="theme-color" content="#3182ce" />
+  <!-- Note: Some hosts block clipboard & SW. We code fallbacks and safe gating. -->
+  <meta http-equiv="Permissions-Policy" content="clipboard-write=(self)">
+  <style>
+    :root{
+      --bg:#f8f9fa;--card:#fff;--text:#2d3748;--muted:#64748b;--border:#e2e8f0;--brand:#3182ce;--brand-2:#25d366;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:#333;line-height:1.6}
+    .container{max-width:740px;margin:0 auto;background:var(--card);min-height:100vh}
+    header{position:sticky;top:0;background:var(--card);border-bottom:1px solid #e9ecef;z-index:5}
+    .header-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 16px}
+    h1{font-size:20px;color:var(--text)}
+    .lang{display:flex;gap:8px}
+    .lang button{border:1px solid var(--border);background:#fff;border-radius:8px;padding:6px 10px;font-size:13px;color:#475569;cursor:pointer}
+    .lang button.active{border-color:var(--brand);color:var(--brand)}
+
+    .hero{position:relative;height:220px;background:linear-gradient(rgba(0,0,0,.35),rgba(0,0,0,.35)),
+      url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 220"><rect width="800" height="220" fill="%23e2e8f0"/><text x="400" y="110" text-anchor="middle" font-family="system-ui" font-size="16" fill="%23718096">Cliquez pour ajouter la photo principale</text></svg>');
+      background-size:cover;background-position:center;display:flex;align-items:flex-end;justify-content:flex-start;cursor:pointer}
+    .hero input{display:none}
+    .badge{background:rgba(0,0,0,.55);color:#fff;border-radius:999px;padding:6px 10px;margin:12px;font-size:12px}
+
+    .card{background:#fff;margin:16px;border-radius:14px;box-shadow:0 6px 16px rgba(0,0,0,.08);padding:18px}
+    .welcome{position:relative;top:-36px}
+    .avatar{width:46px;height:46px;background:var(--brand);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;letter-spacing:.5px;margin-bottom:10px}
+    .welcome h2{font-size:18px;color:var(--text);margin-bottom:6px}
+    .welcome p{color:var(--muted);font-size:14px}
+
+    .accordion{padding:0 16px 16px}
+    .item{border:1px solid var(--border);border-radius:12px;margin-bottom:12px;overflow:hidden;background:#fff}
+    .item summary{list-style:none;padding:14px 16px;display:flex;align-items:center;gap:10px;cursor:pointer}
+    .item summary::-webkit-details-marker{display:none}
+    .item summary h3{font-size:15px;color:var(--text);font-weight:600;flex:1}
+    .item[open] summary{background:#fafafa}
+    .item .body{padding:0 16px 16px;color:#4a5568}
+    .item .body h4{font-size:14px;color:var(--text);margin:10px 0 6px}
+    .list{padding-left:18px}
+    .list li{margin:6px 0}
+
+    .photo-drop{background:#f7fafc;border:2px dashed #cbd5e0;border-radius:10px;padding:16px;text-align:center;margin:10px 0;color:#64748b;cursor:pointer}
+    .photo-drop.has-image{border-style:solid;border-color:var(--border);background:#fff;padding:0}
+    .photo-preview{position:relative}
+    .photo-preview img{width:100%;display:block;border-radius:8px}
+    .photo-actions{position:absolute;top:8px;right:8px;display:flex;gap:6px}
+    .pill{background:rgba(0,0,0,.7);color:#fff;border:none;border-radius:999px;padding:6px 10px;font-size:12px;cursor:pointer}
+
+    .contact-btn{background:var(--brand-2);color:#fff;padding:12px 16px;border-radius:10px;text-decoration:none;display:inline-flex;align-items:center;gap:8px;font-weight:600}
+
+    .wifi{background:#f7fafc;border-left:4px solid var(--brand);padding:14px;border-radius:10px;margin:10px 0}
+    .secret{display:flex;align-items:center;gap:10px;margin:6px 0}
+    .secret code{background:#fff;border:1px solid var(--border);padding:7px 10px;border-radius:8px}
+    .secret button{border:1px solid var(--border);background:#fff;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer}
+
+    footer{padding:18px 16px;text-align:center;color:#64748b;font-size:12px}
+
+    @media print{
+      header,.hero,.lang,.photo-actions{display:none!important}
+      .container{box-shadow:none}
+      .card,.item{break-inside:avoid}
+      a[href]:after{content:" (" attr(href) ")"}
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="app">
+    <header>
+      <div class="header-inner">
+        <h1 data-i18n="title">L'appartement de Casablanca</h1>
+        <div class="lang" aria-label="Sélecteur de langue">
+          <button id="btn-fr" class="active" data-lang="fr" aria-pressed="true">🇫🇷 FR</button>
+          <button id="btn-en" data-lang="en" aria-pressed="false">🇬🇧 EN</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="hero" id="hero" title="Ajouter une photo principale" role="img" aria-label="Photo principale" tabindex="0">
+      <input type="file" id="heroInput" accept="image/*" />
+      <span class="badge" data-i18n="clickToAdd">Cliquez pour changer la photo</span>
+    </div>
+
+    <section class="card welcome">
+      <div class="avatar" aria-hidden="true">QM</div>
+      <h2 data-i18n="welcomeTitle">Bienvenue dans \"L'appartement de Casablanca\"</h2>
+      <p data-i18n="welcomeBody">Nous sommes ravis de vous avoir comme invité. Vous trouverez ci‑dessous toutes les informations essentielles pour rendre votre visite confortable.</p>
+    </section>
+
+    <section class="accordion" id="accordion">
+      <!-- Accès -->
+      <details class="item" open>
+        <summary>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m0 0a2 2 0 012 2m-2-2h-3m-3 7H9a2 2 0 01-2-2V9a2 2 0 012-2h3m0 0V5a2 2 0 112 2m-2 2h3m0 0v2a2 2 0 11-2 2m0-2h-3"/></svg>
+          <h3 data-i18n="access">Accès à la propriété</h3>
+        </summary>
+        <div class="body">
+          <h4>📍 <span data-i18n="address">Adresse</span></h4>
+          <p>H82G+63W, Rte du complexe Administratif, Casablanca 20240, Maroc</p>
+
+          <div class="photo-drop" data-photo="access-entry">
+            <input type="file" accept="image/*" hidden />
+            📸 <span data-i18n="addPhotoEntry">Cliquez pour ajouter une photo de l'entrée</span>
+          </div>
+
+          <h4>🔑 <span data-i18n="keys">Récupération des clés</span></h4>
+          <ul class="list">
+            <li data-i18n="mailboxLoc">Devant la porte principale, ouvrez la boîte aux lettres.</li>
+            <li>
+              <div class="secret">
+                <strong data-i18n="mailboxCode">Code de la boîte aux lettres:</strong>
+                <code data-secret="true" data-value="755">••• cliquez pour révéler •••</code>
+                <button data-copy="#">Copier</button>
+              </div>
+            </li>
+            <li data-i18n="pickupKey">Récupérez la clé de l'appartement.</li>
+            <li><span data-i18n="floor">Appartement situé au</span> <strong>1er étage</strong> — <span data-i18n="elevator">ascenseur disponible</span>.</li>
+          </ul>
+
+          <div class="photo-drop" data-photo="access-mailbox">
+            <input type="file" accept="image/*" hidden />
+            📸 <span data-i18n="addPhotoMailbox">Cliquez pour ajouter une photo de la boîte aux lettres</span>
+          </div>
+        </div>
+      </details>
+
+      <!-- Parking -->
+      <details class="item">
+        <summary>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2v0a2 2 0 01-2-2v-2a2 2 0 00-2-2H8V7z"/></svg>
+          <h3 data-i18n="parkingTitle">Informations de stationnement</h3>
+        </summary>
+        <div class="body">
+          <h4>🚗 <span data-i18n="parking">Parking sous-sol</span></h4>
+          <ul class="list">
+            <li><span data-i18n="parkingSpot">Emplacement :</span> <strong>-2, place 11A</strong></li>
+            <li data-i18n="remoteInFlat">Télécommande disponible dans l'appartement.</li>
+            <li data-i18n="parkingFree">Parking gratuit inclus dans votre séjour.</li>
+          </ul>
+
+          <div class="photo-drop" data-photo="parking">
+            <input type="file" accept="image/*" hidden />
+            📸 <span data-i18n="addPhotoParking">Cliquez pour ajouter une photo du parking</span>
+          </div>
+        </div>
+      </details>
+
+      <!-- Wi-Fi -->
+      <details class="item">
+        <summary>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"/></svg>
+          <h3>Détails Wi‑Fi</h3>
+        </summary>
+        <div class="body">
+          <div class="wifi">
+            <div class="secret">
+              <strong>SSID:</strong>
+              <code>Orange_wifi_BFAD</code>
+              <button data-copy="Orange_wifi_BFAD">Copier</button>
+            </div>
+            <div class="secret">
+              <strong data-i18n="wifiPwd">Mot de passe:</strong>
+              <code data-secret="true" data-value="A3FEq27tYN2Y">••• cliquez pour révéler •••</code>
+              <button data-copy="#">Copier</button>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <!-- Check-out -->
+      <details class="item">
+        <summary>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+          <h3 data-i18n="checkoutTitle">Instructions de check‑out</h3>
+        </summary>
+        <div class="body">
+          <h4>⏰ <span data-i18n="leaveBefore">Départ : Avant midi</span></h4>
+          <p data-i18n="respectTime">Nous comptons sur vous pour respecter l'horaire.</p>
+          <h4>📞 <span data-i18n="notifyUs">Prévenez‑nous</span></h4>
+          <p data-i18n="notifyText">Informez‑nous de l'heure de votre départ pour mieux organiser l'accueil des prochains voyageurs.</p>
+          <h4>🔑 <span data-i18n="beforeLeaving">Que faire avant de partir ?</span></h4>
+          <ul class="list">
+            <li data-i18n="lockDoor">Fermez bien la porte derrière vous.</li>
+            <li data-i18n="dropKeys">Déposez les clés dans la petite boîte prévue à cet effet.</li>
+            <li data-i18n="turnOff">Éteignez les lumières, la climatisation et la plaque vitrocéramique.</li>
+          </ul>
+          <p><strong data-i18n="thanks">Merci de votre coopération, et bon voyage ! 🌟</strong></p>
+        </div>
+      </details>
+
+      <!-- Équipements -->
+      <details class="item">
+        <summary>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+          <h3 data-i18n="amenitiesTitle">Fonctionnalités de l'appartement</h3>
+        </summary>
+        <div class="body">
+          <h4>🏠 <span data-i18n="amenities">Équipements disponibles</span></h4>
+          <ul class="list">
+            <li>Cuisine équipée (réfrigérateur, four, micro‑ondes, cuisinière)</li>
+            <li>Lave‑linge, fer à repasser</li>
+            <li>Climatisation et chauffage</li>
+            <li>Télévision, système audio</li>
+            <li>Espace de travail dédié avec Wi‑Fi</li>
+            <li>Sèche‑cheveux, produits d'hygiène fournis</li>
+            <li>Serviettes, draps et essentiels inclus</li>
+          </ul>
+
+          <h4>☕ <span data-i18n="kitchen">Cuisine</span></h4>
+          <ul class="list">
+            <li>Cafetière, bouilloire électrique, grille‑pain</li>
+            <li>Ustensiles de base (casseroles, poêles, vaisselle)</li>
+            <li>Cuiseur à riz</li>
+            <li>Café fourni</li>
+          </ul>
+
+          <div class="photo-drop" data-photo="amenity">
+            <input type="file" accept="image/*" hidden />
+            📸 <span data-i18n="addPhotoAmenity">Cliquez pour ajouter une photo d'équipement</span>
+          </div>
+        </div>
+      </details>
+
+      <!-- Règles de la maison -->
+      <details class="item">
+        <summary>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+          <h3 data-i18n="rulesTitle">Règles de la maison</h3>
+        </summary>
+        <div class="body">
+          <h4>🚭 <span data-i18n="noSmoke">Interdiction de fumer</span></h4>
+          <p data-i18n="noSmokeTxt">Pas de fumée à l'intérieur, s'il vous plaît !</p>
+          <h4>🤫 <span data-i18n="quietHours">Respect du voisinage</span></h4>
+          <ul class="list">
+            <li data-i18n="quietTime">Silence de 21h à 3h.</li>
+            <li data-i18n="beKind">Faites preuve de considération envers vos voisins.</li>
+          </ul>
+          <h4>🎉 <span data-i18n="noParty">Événements et fêtes interdits</span></h4>
+          <p data-i18n="noPartyTxt">Merci de préserver la tranquillité des lieux.</p>
+          <h4>👥 <span data-i18n="guestsOnly">Accès restreint</span></h4>
+          <p data-i18n="guestsOnlyTxt">Seuls les voyageurs indiqués dans la réservation sont autorisés.</p>
+        </div>
+      </details>
+
+      <!-- Recos locales -->
+      <details class="item">
+        <summary>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          <h3 data-i18n="localTitle">Recommandations locales</h3>
+        </summary>
+        <div class="body">
+          <h4>🚇 <span data-i18n="transport">Transport</span></h4>
+          <ul class="list">
+            <li data-i18n="tram">Tramway : station à ~10 min à pied.</li>
+            <li data-i18n="redTaxi">Taxi rouge : demandez l'activation du compteur (5–6 km ≈ 10 DH).</li>
+            <li data-i18n="apps">Applications VTC : InDrive, Careem.</li>
+          </ul>
+          <h4>🛒 <span data-i18n="groceries">Courses</span></h4>
+          <ul class="list">
+            <li>Marjane, BIM, Carrefour Market.</li>
+            <li>Kazyon Assafa et Carrefour Market à &lt; 5 min.</li>
+          </ul>
+          <h4>🍕 <span data-i18n="fastFood">Restauration rapide</span></h4>
+          <ul class="list"><li>KFC à ~200 m — ouvert jusqu'à minuit.</li></ul>
+          <h4>📦 <span data-i18n="delivery">Livraison</span></h4>
+          <ul class="list"><li>Kooul, Glovo, etc.</li></ul>
+
+          <div class="photo-drop" data-photo="neighborhood">
+            <input type="file" accept="image/*" hidden />
+            📸 <span data-i18n="addPhotoArea">Cliquez pour ajouter une photo du quartier</span>
+          </div>
+        </div>
+      </details>
+
+      <!-- Contact -->
+      <details class="item">
+        <summary>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/></svg>
+          <h3 data-i18n="contactTitle">Informations de contact</h3>
+        </summary>
+        <div class="body">
+          <p><strong data-i18n="forUrgency">Pour toute urgence ou question :</strong></p>
+          <p>
+            <a class="contact-btn" id="waLink" href="https://wa.me/212713496476" target="_blank" rel="noopener">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/></svg>
+              WhatsApp : +212 713 496 476
+            </a>
+          </p>
+        </div>
+      </details>
+    </section>
+
+    <footer>
+      <p>✨ Bon séjour à Casablanca !</p>
+      <p style="margin-top:6px;font-size:11px">Astuce : enregistrez cette page sur votre téléphone pour y accéder hors‑ligne.</p>
+    </footer>
+  </div>
+
+  <script>
+    // -------- i18n minimal (FR/EN) --------
+    const DICT = {
+      fr:{
+        title:"L'appartement de Casablanca",clickToAdd:"Cliquez pour changer la photo",welcomeTitle:"Bienvenue dans \"L'appartement de Casablanca\"",
+        welcomeBody:"Nous sommes ravis de vous avoir comme invité. Vous trouverez ci‑dessous toutes les informations essentielles pour rendre votre visite confortable.",
+        access:"Accès à la propriété",address:"Adresse",keys:"Récupération des clés",mailboxLoc:"Devant la porte principale, ouvrez la boîte aux lettres.",
+        mailboxCode:"Code de la boîte aux lettres:",pickupKey:"Récupérez la clé de l'appartement.",floor:"Appartement situé au",elevator:"ascenseur disponible",
+        addPhotoEntry:"Cliquez pour ajouter une photo de l'entrée",addPhotoMailbox:"Cliquez pour ajouter une photo de la boîte aux lettres",
+        parkingTitle:"Informations de stationnement",parking:"Parking sous-sol",parkingSpot:"Emplacement :",remoteInFlat:"Télécommande disponible dans l'appartement.",parkingFree:"Parking gratuit inclus dans votre séjour.",addPhotoParking:"Cliquez pour ajouter une photo du parking",
+        wifiPwd:"Mot de passe:",
+        checkoutTitle:"Instructions de check‑out",leaveBefore:"Départ : Avant midi",respectTime:"Nous comptons sur vous pour respecter l'horaire.",notifyUs:"Prévenez‑nous",notifyText:"Informez‑nous de l'heure de votre départ pour mieux organiser l'accueil des prochains voyageurs.",beforeLeaving:"Que faire avant de partir ?",lockDoor:"Fermez bien la porte derrière vous.",dropKeys:"Déposez les clés dans la petite boîte prévue à cet effet.",turnOff:"Éteignez les lumières, la climatisation et la plaque vitrocéramique.",thanks:"Merci de votre coopération, et bon voyage ! 🌟",
+        amenitiesTitle:"Fonctionnalités de l'appartement",amenities:"Équipements disponibles",kitchen:"Cuisine",addPhotoAmenity:"Cliquez pour ajouter une photo d'équipement",
+        rulesTitle:"Règles de la maison",noSmoke:"Interdiction de fumer",noSmokeTxt:"Pas de fumée à l'intérieur, s'il vous plaît !",quietHours:"Respect du voisinage",quietTime:"Silence de 21h à 3h.",beKind:"Faites preuve de considération envers vos voisins.",noParty:"Événements et fêtes interdits",noPartyTxt:"Merci de préserver la tranquillité des lieux.",guestsOnly:"Accès restreint",guestsOnlyTxt:"Seuls les voyageurs indiqués dans la réservation sont autorisés.",
+        localTitle:"Recommandations locales",transport:"Transport",tram:"Tramway : station à ~10 min à pied.",redTaxi:"Taxi rouge : demandez l'activation du compteur (5–6 km ≈ 10 DH).",apps:"Applications VTC : InDrive, Careem.",groceries:"Courses",fastFood:"Restauration rapide",delivery:"Livraison",addPhotoArea:"Cliquez pour ajouter une photo du quartier",
+        contactTitle:"Informations de contact",forUrgency:"Pour toute urgence ou question :"
+      },
+      en:{
+        title:"Casablanca Apartment",clickToAdd:"Click to change photo",welcomeTitle:"Welcome to the \"Casablanca Apartment\"",
+        welcomeBody:"We're delighted to host you. Below is everything you need for a comfortable stay.",
+        access:"Property Access",address:"Address",keys:"Key pickup",mailboxLoc:"At the main door, open the mailbox.",
+        mailboxCode:"Mailbox code:",pickupKey:"Retrieve the apartment key.",floor:"Apartment on the",elevator:"elevator available",
+        addPhotoEntry:"Click to add an entrance photo",addPhotoMailbox:"Click to add a mailbox photo",
+        parkingTitle:"Parking information",parking:"Underground parking",parkingSpot:"Spot:",remoteInFlat:"Remote is available in the apartment.",parkingFree:"Parking included in your stay.",addPhotoParking:"Click to add a parking photo",
+        wifiPwd:"Password:",
+        checkoutTitle:"Check‑out instructions",leaveBefore:"Check‑out: before noon",respectTime:"Please respect the timing.",notifyUs:"Let us know",notifyText:"Tell us your departure time so we can prepare for the next guests.",beforeLeaving:"Before leaving",lockDoor:"Lock the door behind you.",dropKeys:"Drop the keys in the small box.",turnOff:"Turn off lights, AC and cooktop.",thanks:"Thank you and have a great trip! 🌟",
+        amenitiesTitle:"Apartment amenities",amenities:"Available amenities",kitchen:"Kitchen",addPhotoAmenity:"Click to add an amenity photo",
+        rulesTitle:"House rules",noSmoke:"No smoking",noSmokeTxt:"No smoking inside, please.",quietHours:"Quiet hours",quietTime:"Quiet from 9pm to 3am.",beKind:"Please be considerate to neighbours.",noParty:"No parties or events",noPartyTxt:"Keep the place peaceful.",guestsOnly:"Guests only",guestsOnlyTxt:"Only guests on the reservation are allowed.",
+        localTitle:"Local tips",transport:"Transport",tram:"Tram station ~10 min walk.",redTaxi:"Red taxi: ask driver to turn on the meter (5–6 km ≈ 10 DH).",apps:"Ride‑hailing: InDrive, Careem.",groceries:"Groceries",fastFood:"Fast food",delivery:"Delivery",addPhotoArea:"Click to add a neighborhood photo",
+        contactTitle:"Contact information",forUrgency:"For any question or emergency:"
+      }
+    };
+
+    const $ = (sel, root=document) => root.querySelector(sel);
+    const $$ = (sel, root=document) => [...root.querySelectorAll(sel)];
+
+    // -------- Language switching --------
+    function applyLang(lang){
+      const dict = DICT[lang] || DICT.fr;
+      $$('[data-i18n]').forEach(el=>{
+        const key = el.getAttribute('data-i18n');
+        if(dict[key]) el.textContent = dict[key];
+      });
+      $('#btn-fr').classList.toggle('active', lang==='fr');
+      $('#btn-en').classList.toggle('active', lang==='en');
+      $('#btn-fr').setAttribute('aria-pressed', lang==='fr');
+      $('#btn-en').setAttribute('aria-pressed', lang==='en');
+      localStorage.setItem('lang', lang);
+    }
+
+    $('#btn-fr').addEventListener('click',()=>applyLang('fr'));
+    $('#btn-en').addEventListener('click',()=>applyLang('en'));
+
+    // -------- Photo uploads with persistence & compression --------
+    function bindPhotoDrop(drop){
+      const input = drop.querySelector('input[type=file]');
+      const key = 'photo:'+drop.dataset.photo;
+      function show(dataUrl){
+        drop.classList.add('has-image');
+        drop.innerHTML = `<div class="photo-preview"><img alt="Photo" src="${dataUrl}"><div class="photo-actions"><button class="pill" data-act="replace">Changer</button><button class="pill" data-act="remove">Supprimer</button></div></div>`;
+        // Re-bind actions
+        drop.querySelector('[data-act="replace"]').addEventListener('click',()=>input.click());
+        drop.querySelector('[data-act="remove"]').addEventListener('click',()=>{
+          localStorage.removeItem(key);
+          reset();
+        });
+      }
+      function reset(){
+        drop.classList.remove('has-image');
+        drop.innerHTML = '';
+        const newInput = document.createElement('input');
+        newInput.type='file'; newInput.accept='image/*'; newInput.hidden=true;
+        drop.appendChild(newInput);
+        drop.insertAdjacentText('beforeend','📸 ');
+        const span = document.createElement('span');
+        span.textContent = drop.dataset.i18nText || drop.querySelector('span')?.textContent || 'Cliquez pour ajouter une photo';
+        drop.appendChild(span);
+        newInput.addEventListener('change',handleFile);
+        drop.addEventListener('click',()=>newInput.click(),{once:true});
+      }
+      async function compress(file,maxW=1400){
+        const img = new Image();
+        const fr = new FileReader();
+        const loaded = new Promise(res=>{fr.onload=()=>{img.src=fr.result;img.onload=res};});
+        fr.readAsDataURL(file); await loaded;
+        const scale = Math.min(1, maxW/img.width);
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width*scale; canvas.height = img.height*scale;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img,0,0,canvas.width,canvas.height);
+        return canvas.toDataURL('image/jpeg',0.85);
+      }
+      async function handleFile(e){
+        const file = e.target.files[0]; if(!file) return;
+        const dataUrl = await compress(file);
+        localStorage.setItem(key,dataUrl);
+        show(dataUrl);
+      }
+      input.addEventListener('change',handleFile);
+      drop.addEventListener('click',()=>input.click());
+      const saved = localStorage.getItem(key); if(saved) show(saved);
+    }
+
+    // Bind all photo areas
+    $$('.photo-drop').forEach(bindPhotoDrop);
+
+    // Hero image persistence
+    (function(){
+      const hero = $('#hero');
+      const input = $('#heroInput');
+      const KEY='photo:hero';
+      async function compress(file,maxW=1600){
+        const img=new Image();const fr=new FileReader();
+        await new Promise(res=>{fr.onload=()=>{img.src=fr.result;img.onload=res};fr.readAsDataURL(file);});
+        const scale=Math.min(1,maxW/img.width);const c=document.createElement('canvas');
+        c.width=img.width*scale; c.height=img.height*scale; c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+        return c.toDataURL('image/jpeg',0.85);
+      }
+      function setBG(url){
+        hero.style.backgroundImage = `linear-gradient(rgba(0,0,0,.35),rgba(0,0,0,.35)), url('${url}')`;
+      }
+      const saved=localStorage.getItem(KEY); if(saved) setBG(saved);
+      hero.addEventListener('click',()=>input.click());
+      hero.addEventListener('keypress',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();input.click();}});
+      input.addEventListener('change',async e=>{const f=e.target.files[0]; if(!f) return; const url=await compress(f); localStorage.setItem(KEY,url); setBG(url);});
+    })();
+
+    // -------- Clipboard helpers (safe) & Secrets (click to reveal) --------
+    async function copyTextSafe(text){
+      try{
+        if(navigator.clipboard && navigator.clipboard.writeText){
+          await navigator.clipboard.writeText(text);
+          return true;
+        }
+      }catch(e){ /* blocked by permissions policy, fallback below */ }
+      try{
+        const ta = document.createElement('textarea');
+        ta.value = text; ta.setAttribute('readonly','');
+        ta.style.position='fixed'; ta.style.top='-1000px'; ta.style.opacity='0';
+        document.body.appendChild(ta);
+        ta.focus(); ta.select();
+        const ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+        return !!ok;
+      }catch(err){ console.warn('Copy fallback failed:', err); return false; }
+    }
+
+    function bindSecrets(){
+      $$("code[data-secret]").forEach(code=>{
+        const val = code.getAttribute('data-value');
+        code.addEventListener('click',()=>{code.textContent = val; code.removeAttribute('data-secret');});
+      });
+      $$('button[data-copy]').forEach(btn=>{
+        btn.addEventListener('click',async ()=>{
+          const val = btn.getAttribute('data-copy');
+          let toCopy = val && val !== '#' ? val : btn.previousElementSibling?.getAttribute('data-value') || btn.previousElementSibling?.textContent;
+          const ok = await copyTextSafe(toCopy||'');
+          btn.textContent = ok ? 'Copié ✔' : 'Échec copie';
+          setTimeout(()=>btn.textContent='Copier',1200);
+        });
+      });
+    }
+
+    bindSecrets();
+
+    // -------- Restore language --------
+    applyLang(localStorage.getItem('lang')||'fr');
+
+    // -------- PWA: safe Service Worker gating (no blob: URL; only when sw.js exists) --------
+    (async function setupSW(){
+      if(!('serviceWorker' in navigator)) return;
+      const proto = location.protocol;
+      const isHttp = proto === 'https:' || proto === 'http:';
+      const isBlob = proto === 'blob:';
+      if(!isHttp || isBlob){
+        console.info('[SW] Disabled in this environment (protocol=', proto, ').');
+        return; // Avoid registering from blob:// or non-HTTP contexts
+      }
+      try{
+        const resp = await fetch('sw.js', {method:'GET', cache:'no-store'});
+        if(!resp.ok){ console.info('[SW] sw.js not found; skipping registration.'); return; }
+        await navigator.serviceWorker.register('sw.js', {scope: './'});
+        console.log('[SW] Registered successfully.');
+      }catch(e){ console.warn('[SW] Registration skipped/failed:', e); }
+    })();
+
+    // -------- Minimal runtime tests (non-breaking) --------
+    (function tests(){
+      try{ console.assert(typeof copyTextSafe==='function', 'copyTextSafe exists'); }catch(_){ }
+      try{
+        const proto = location.protocol;
+        const shouldDisable = !(proto==='http:'||proto==='https:') || proto==='blob:';
+        console.assert(shouldDisable === (proto!=='http:' && proto!=='https:' || proto==='blob:'), 'SW gating logic consistent');
+      }catch(_){ }
+    })();
+  </script>
+</body>
+</html>
